@@ -1,0 +1,62 @@
+
+ What I have done in the assignment: I have finished the requirements in the assignment.
+	Phase 1: All servers boot up, then run the client program. The client opens the txt file, reads the contents, then sets up a TCP connection and sends the contents to edge server;
+	Phase 2: Edge server receives the contents from client, then sets up two UDP connections. Edge server determines which backend server should be received the message after checking the calculation type of each row in the original contents. Once a backend server receives the contents from edge server, it extracts the calculating data, calculates at once, prints out the calculation result and send it back to edge server through UDP connection.
+	Phase 3: After receives all calculation results from two backend servers, it prints out the results and sends them back to client through TCP connection. At last, the client receives the reply of edge server, shows the final results line by line.
+What my code files are and what each one of them does: There are four code files: client.c, edge.c, server_and.c, server_or.c. 
+	client.c: works as client, opens the original file, gets the contents, sends them to edge and receives the final calculation results through TDP connection;
+	edge.c: works as edge, receives the contents from client through TCP connection, determines the backend to receive the contents row by row, sends the contents to two backend servers and receives the calculation results through UDP connections, sends back to client through TCP connection;
+	server_and.c, server_or.c: both work as backend servers, receive the contents from edge through UDP connections, extracts the calculating data from the contents, do 'and' and 'or' operations respectively, show the calculation results and send back to edge through UDP connections. 
+What should do to run programs: 
+    	1. Open four terminals, then use any one of them to type"make all" to compile the four code files; 
+    	2. Type "make server_and" using one terminal to run server_and;
+    	3. Type "make server_or" using one terminal to run server_or;
+    	4. Type "make edge" using one terminal to run edge;
+    	5. Type "./client _filename_.txt" to run the client, such as"./client job.txt". 
+The format of all the messages exchanged:
+    client.c:The client is up and running.
+             The client has successfully finished sending 8 lines to the edge server.
+  	     The client has successfully finished receiving all computation results from the edge server.
+	     The final computation results are:          
+             101
+             1011
+             10011
+             1       
+             0000000000
+             11011
+             1
+             11111
+    edge.c:The edge server is up and running.
+           The edge server has received 8 lines from the client using TCP over port 23028.
+           The edge server has successfully sent 4 lines to Backend-Server OR.
+           The edge server has successfully sent 4 lines to Backend-Server AND.
+           The edge server starts receiving the computation results from Backend-Server OR and Backend-Server AND using UDP port 24028.
+           The computation results are:
+		10111 or 101 = 101
+		10 or 1011 = 1011
+		11 and 10001 = 10011
+		1001 and 111 = 1
+                10001 and 1110= 0000000000
+                11011 or 10 = 11011
+                1001 and 11 = 1
+                10001 or 1110 = 11111
+           The edge server has successfully finished receiving all computation results from the Backend-Server OR and Backend-Server AND.
+           The edge server has successfully finished sending all computation results to the client.
+     server_and.c:The Server AND is up and running using UDP on port 22028.
+           The Server AND starts receiving lines from the edge server for AND computation.The computation results are:
+           10111 and 101 = 101
+           1001 and 111 = 1
+	   10001 and 1110= 0000000000
+           1001 and 11= 1
+           The Server AND has successfully received 4 lines from the edge server and finished all AND computations.
+           The Server AND has successfully finished sending all computation results to the edge server.
+     server_or.c:The Server OR is up and running using UDP on port 21028.
+           The Server OR start receiving lines from the edge server for OR computation. 
+           The computation results are:
+           10 or 1011 = 1011
+           11 or 10001 = 10011
+	   11011 or 10 = 11011
+           10001 or 1110 = 11111
+           The Server OR has successfully received 4 lines from the edge server and finished all OR computations.
+           The Server OR has successfully finished sending all computation results to the edge server.
+	(In my program, the maxmium bit length of each number in calculating operation is 10. If the calculation result is 0, then the screen shows "0000000000"  )
